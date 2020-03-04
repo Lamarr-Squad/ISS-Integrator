@@ -11,14 +11,19 @@
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet'/>
     <!--Custom CSS-->
     <link rel="stylesheet" href="css/iss.css">
+    <!--MapboxKey-->
+    <script src="js/keys.js"></script>
 </head>
 <body>
 
 
-
-<div id='map' style='width: 400px; height: 300px;'></div>
+<div class="row">
+    <div class="col-12">
+        <div id='map'></div>
+    </div>
+</div>
 <script>
-    mapboxgl.accessToken = 'mapBoxToken';
+    mapboxgl.accessToken = mapBoxToken;
     var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v9'
@@ -26,10 +31,6 @@
 </script>
 
 
-
-
-<!--MapboxKey-->
-<script src="js/keys.js"></script>
 <!--Bootstrap JS-->
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
