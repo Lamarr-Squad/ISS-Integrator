@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+"use strict";
+// var issData = url('https://api.wheretheiss.at/v1/satellites/25544');
 var issData = 'https://api.wheretheiss.at/v1/satellites/25544';
 
 function getCoords() {
@@ -50,13 +51,12 @@ var funFacts = [
         Fact3: "The first piloted mission in space was Apollo 7 in 1968!",
     }
 ];
-=======
-"use strict";
-// var issData = url('https://api.wheretheiss.at/v1/satellites/25544');
+
+
 
 mapboxgl.accessToken = mapBoxToken;
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v9'
 });
->>>>>>> fbc40334a4a2240a61284370d1483493ed326ace
+
