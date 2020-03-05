@@ -1,6 +1,22 @@
 "use strict";
-// var issData = url('https://api.wheretheiss.at/v1/satellites/25544');
+mapboxgl.accessToken = mapBoxToken;
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v9'
+});
+
+
 var issData = 'https://api.wheretheiss.at/v1/satellites/25544';
+var issDataGeoJSON = {
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [fetch(issData).latitude, fetch(issData).longitude]
+    },
+    "properties": {
+        "name": ""
+    }
+};
 
 function getCoords() {
     fetch(issData)
@@ -13,21 +29,40 @@ function getCoords() {
         })
         .then((json) => {
 
-            var lat = json.latitude;
-            var lng = json.longitude;
-            var alt = json.altitude;
-            var vel = json.velocity;
+                var lat = json.latitude;
+                var lng = json.longitude;
+                var alt = json.altitude;
+                var vel = json.velocity;
 
-            document.getElementById('lat').innerHTML = "Latitude: " + lat.toFixed(6);
-            document.getElementById('lng').innerHTML = "Longitude: " + lng.toFixed(6);
-            document.getElementById('altitude').innerHTML = "Altitude: " + alt.toFixed(6);
-            document.getElementById('velocity').innerHTML = "Velocity: " + vel.toFixed(6);
+                document.getElementById('lat').innerHTML = "Latitude: " + lat.toFixed(6);
+                document.getElementById('lng').innerHTML = "Longitude: " + lng.toFixed(6);
+                document.getElementById('altitude').innerHTML = "Altitude: " + alt.toFixed(6);
+                document.getElementById('velocity').innerHTML = "Velocity: " + vel.toFixed(6);
 
             }
         );
     setTimeout(getCoords, 5000);
 }
+
 getCoords();
+
+
+map.on('load', function () {
+    window.setInterval(function () {
+        map.getSource('drone').setData(issDataGeoJSON);
+    }, 2000);
+
+    map.addSource('drone', {type: 'geojson', data: issDataGeoJSON});
+    map.addLayer({
+        'id': 'drone',
+        'type': 'symbol',
+        'source': 'drone',
+        'layout': {
+            'icon-image': 'rocket-15'
+        }
+    });
+});
+
 
 var funFacts = [
     {
@@ -51,12 +86,4 @@ var funFacts = [
         Fact3: "The first piloted mission in space was Apollo 7 in 1968!",
     }
 ];
-
-
-
-mapboxgl.accessToken = mapBoxToken;
-var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v9'
-});
 
