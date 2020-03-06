@@ -1,15 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>I.S.S. Tracker</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
+    <title>ISS Tracker</title>
     <!--Bootstrap CSS-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+<<<<<<< HEAD
     <!--Mapbox CSS/JS-->
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
     <script src="js/keys.js"></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet'/>
+=======
+    <!--Google Fonts-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- mapbox CDN -->
+    <script src='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.css' rel='stylesheet'/>
+>>>>>>> 0a224fc0af2fbdbd42c1a0eaa7559da40712ade5
     <!--Custom CSS-->
     <link rel="stylesheet" href="css/iss.css">
     <style>
@@ -30,8 +38,35 @@
 </head>
 <body>
 
+<!--Header-->
+<div class="header">
+    <h3 id="header">International Space Station Tracker</h3>
+</div>
 
+<!-- Live View Modal-->
+<div class="modal fade text-center" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Live View From The ISS</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <iframe width="600" height="355" src="https://www.youtube.com/embed/EEIk7gwjgIM" frameborder="0"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Live View Modal-->
 
+<<<<<<< HEAD
 
 <div id='map' style='width: 100%; height: 700px;'>
 <script>
@@ -42,10 +77,16 @@
 
 
 <!--MapboxKey-->
+=======
+<!--Footer/Coordinates/Popup-->
+<div id="map"></div>
+<pre id='coordinates' class='ui-coordinates'></pre>
+<h4 id="theFacts">Loading Facts...</h4>
+
+
+>>>>>>> 0a224fc0af2fbdbd42c1a0eaa7559da40712ade5
 <!--Bootstrap JS-->
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
@@ -53,6 +94,7 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
 <!--Custom JS-->
+<script src="js/iss-pos-json.js"></script>
 <script src="js/iss.js"></script>
 <script src="js/iss-position-functions.js"></script>
 </body>
