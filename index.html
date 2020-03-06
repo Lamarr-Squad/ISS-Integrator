@@ -1,53 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>I.S.S. Tracker</title>
-    <!--Bootstrap CSS-->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <!--Mapbox CSS/JS-->
-    <script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet'/>
-    <!--Custom CSS-->
-    <link rel="stylesheet" href="css/iss.css">
-    <!--MapboxKey-->
-    <script src="js/keys.js"></script>
+  <meta charset="UTF-8">
+  <title>ISS Tracker</title>
+  <script src="js/iss-pos-json.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <!-- mapbox CDN -->
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>
+  <link href='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css' rel='stylesheet' />
 
-
+  <style>
+      body { margin:0; padding:0; }
+      #map { position:absolute; top:0; bottom:0; width:100%; }
+      .ui-coordinates {
+        position:absolute;
+        bottom:10px;
+        left:10px;
+        padding:5px 10px;
+        background:rgba(0,0,0,0.5);
+        color:#fff;
+        font-size:11px;
+        line-height:18px;
+        border-radius:3px;
+      }
+  </style>
 </head>
 <body>
 
+<div id="map"></div>
+<pre id='coordinates' class='ui-coordinates'></pre>
 
-<div class="row">
-    <div class="col-12">
-        <div id='map'></div>
-    </div>
-</div>
+<script type="text/javascript">
+  $(document).ready(function() {
+    var lat, lon;
+    var pubnub = PUBNUB({
+      subscribe_key : 'demo'
+    });
 
+    // initializing mapbox
+    L.mapbox.accessToken = 'pk.eyJ1IjoiYW5tb2wxNzcxIiwiYSI6ImNYZXN1N28ifQ.s-1Hjdb2UR9_6eeTPJGn3A'; //public key
+    var map = L.mapbox.map('map', 'mapbox.streets');
+    var marker = L.marker([-73, 40], {
+      icon: L.mapbox.marker.icon({
+        'marker-size': 'large',
+        'marker-symbol': 'rocket',
+        "marker-color": "#63b6e5"
+      })
+    });
 
-<footer>
-    <div id="footer">
-        <h2 id="lat"></h2>
-        <h2 id="lng"></h2>
-        <h2 id="altitude"></h2>
-        <h2 id="velocity"></h2>
-    </div>
-</footer>
+    marker.addTo(map);
 
+    // Add a new line to the map with no points.
+    var polyline = L.polyline([]).addTo(map);
 
-<!--Bootstrap JS-->
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-        crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-        crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
-        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
-        crossorigin="anonymous"></script>
-<!--Custom JS-->
-<script src="js/keys.js"></script>
-<script src="js/iss.js"></script>
+    // Keep a tally of how many points we've added to the map.
+    var pointsAdded = 0;
+
+    var coordinates = document.getElementById('coordinates');
+
+    pubnub.subscribe({
+      channel : "iss-pubnub",
+      message : function(message){
+        lat = message['latitude'];
+        lon = message['longitude'];
+
+        map.setView([lat, lon]);
+        marker.setLatLng([lat, lon], 15); //15 is the zoomlevel
+
+        polyline.addLatLng([lat, lon], pointsAdded);
+
+        coordinates.innerHTML = 'Latitude: ' + lat + '<br />Longitude: ' + lon;
+      }
+    })
+    // pubnub subscribe end
+
+  });
+  // document end
+</script>
 </body>
 </html>

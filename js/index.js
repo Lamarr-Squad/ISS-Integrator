@@ -1,0 +1,22 @@
+var getJSON = require('get-json')
+var pubnub = require("pubnub")({
+    subscribe_key: 'demo', // always required
+    publish_key: 'demo'	// only required if publishing
+});
+
+function moveISS () {
+    $.get('http://api.open-notify.org/iss-now.json', function(error, response) {
+        var lat = response['iss_position']['latitude'];
+        var lon = response['iss_position']['longitude'];
+
+        pubnub.publish({  //publishing the updated seat numbers through PubNub, in 'iss-pubnub' channel
+            channel: "iss-pubnub",
+            message: {"latitude" : lat, "longitude" : lon}, //this is the message payload we are sending
+            callback: function(m){console.log(m)}
+        });
+
+    });
+    setTimeout(moveISS, 3000);
+}
+
+moveISS();
