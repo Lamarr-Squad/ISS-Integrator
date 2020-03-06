@@ -1,6 +1,6 @@
+"use strict";
 $(document).ready(function () {
-    "use strict";
-//Access MapBox
+    //Access MapBox
     mapboxgl.accessToken = mapBoxToken;
     var map = new mapboxgl.Map({
         container: 'map',
@@ -8,32 +8,6 @@ $(document).ready(function () {
     });
 
     var url = 'https://api.wheretheiss.at/v1/satellites/25544';
-
-
-    function refresh(url) {
-        var test = $.ajax(url);
-        var issDataGeoJSON = {};
-
-        test.done(function (jsonData) {
-            var lat = jsonData.latitude;
-            var lng = jsonData.longitude;
-
-            issDataGeoJSON = {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [lat, lng]
-                },
-                "properties": {
-                    "name": "test"
-                }
-            };
-        });
-        console.log(issDataGeoJSON);
-        return issDataGeoJSON;
-    }
-
-    setInterval(refresh(url), 2000);
 
     function getCoords() {
         fetch(url)
@@ -49,7 +23,17 @@ $(document).ready(function () {
                 var lng = json.longitude;
                 var alt = json.altitude;
                 var vel = json.velocity;
-
+                var issDataGeoJSON = {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [lng, lat]
+                    },
+                    "properties": {
+                        "name": "test"
+                    }
+                };
+                window.issDataGeoJSONGlobal = issDataGeoJSON;
                 document.getElementById('lat').innerHTML = "Latitude: " + lat.toFixed(6);
                 document.getElementById('lng').innerHTML = "Longitude: " + lng.toFixed(6);
                 document.getElementById('altitude').innerHTML = "Altitude: " + alt.toFixed(6);
@@ -59,13 +43,13 @@ $(document).ready(function () {
     }
 
     getCoords();
-
+    // console.log(issDataGeoJSONGlobal);
     map.on('load', function () {
         window.setInterval(function () {
-            map.getSource('drone').setData(refresh());
+            map.getSource('drone').setData(issDataGeoJSONGlobal);
         }, 2000);
 
-        map.addSource('drone', {type: 'geojson', data: refresh()});
+        map.addSource('drone', {type: 'geojson', data: issDataGeoJSONGlobal});
         map.addLayer({
             'id': 'drone',
             'type': 'symbol',
@@ -75,7 +59,6 @@ $(document).ready(function () {
             }
         });
     });
-
 
     var funFacts = [
         {
