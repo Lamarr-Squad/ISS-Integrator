@@ -28,6 +28,10 @@
 
 </head>
 <body>
+<div class="header">
+  <h3>International Space Station Tracker</h3>
+  <h4 id="theFacts" class="theFacts">This is a special fact</h4>
+</div>
 
 // Live View Modal
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -105,13 +109,14 @@
           message: function (message) {
               lat = message['latitude'];
               lon = message['longitude'];
+              alt = message['altitude'];
 
               map.setView([lat, lon]);
               marker.setLatLng([lat, lon], 15); //15 is the zoomlevel
 
               polyline.addLatLng([lat, lon], pointsAdded);
 
-              coordinates.innerHTML = 'Latitude: ' + lat + '<br />Longitude: ' + lon + '<br /> <button id="liveButton" type="button" data-toggle="modal" data-target="#myModal">Live View</button><div><h2 id="theFacts">This is a special fact</h2></div>';
+              coordinates.innerHTML = 'Latitude: ' + lat + '<br />Longitude: ' + lon +'<br /> <button id="liveButton" type="button" data-toggle="modal" data-target="#myModal">Live View</button>';
           }
 
       })
