@@ -42,7 +42,7 @@ $(document).ready(function () {
     }
 
     getCoords();
-    console.log(issDataGeoJSONGlobal);
+
     map.on('load', function () {
         window.setInterval(function () {
             map.getSource('drone').setData(issDataGeoJSONGlobal);
