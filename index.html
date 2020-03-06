@@ -9,12 +9,6 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- mapbox CDN -->
   <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
-<!--  <script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>-->
-<!--  <link href='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css' rel='stylesheet'/>-->
-
-<!--<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>-->
-<!--<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />-->
-
   <script src='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.js'></script>
 <link href='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.css' rel='stylesheet' />
 <style>
@@ -76,23 +70,7 @@
               "marker-color": "#63b6e5"
           })
       })
-
-             // .bindPopup('<button id="liveButton" type="button" data-toggle="modal" data-target="#myModal">Launch modal</button>')
-
               .addTo(map);
-// LIVE VIEW POP
-//     $('#myModal').on('click', '.modal-body', function() {
-//       alert('Hello from Toronto!');
-//
-//     });
-//
-//     $('#map').on('click', '#liveButton', function() {
-//       $('#myModal').modal('show');
-//     });
-    // "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/EEIk7gwjgIM\" " +
-    // "frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen>Live View From the ISS!</iframe>"
-
-// LIVE VIEW END
 
       marker.addTo(map);
 
@@ -109,22 +87,23 @@
           message: function (message) {
               lat = message['latitude'];
               lon = message['longitude'];
-              alt = message['altitude'];
+
 
               map.setView([lat, lon]);
               marker.setLatLng([lat, lon], 15); //15 is the zoomlevel
 
               polyline.addLatLng([lat, lon], pointsAdded);
 
-              coordinates.innerHTML = 'Latitude: ' + lat + '<br />Longitude: ' + lon +'<br /> <button id="liveButton" type="button" data-toggle="modal" data-target="#myModal">Live View</button>';
+              coordinates.innerHTML = 'Latitude: ' + lat + '<br />Longitude: ' + lon +'<br />Velocity: ' + vel + 'Km/h'+ '<br />Altitude: ' + alt + 'Km'+
+            '<br /> <button id="liveButton" type="button" data-toggle="modal" data-target="#myModal">Live View</button>';
           }
 
       })
 
-      // track end
-
-
   });
+
+
+
   function randomFact() {
   var funFacts =
           [
@@ -152,6 +131,28 @@
   }, 5000);//wait 2 seconds
 
   console.log(randomFact());
+
+  var issData = 'https://api.wheretheiss.at/v1/satellites/25544';
+  function getCoords() {
+    fetch(issData)
+            .then((response) => {
+              if (response.ok) {
+                return response.json();
+              } else {
+                throw new Error('no connection');
+              }
+            })
+            .then((json) => {
+                      var alt = json.altitude;
+                      var vel = json.velocity;
+                      window.alt = alt.toFixed(4);
+                      window.vel = vel.toFixed(4);
+                    }
+            );
+    setTimeout(getCoords, 5000);
+  }
+  getCoords();
+
   // document end
 </script>
 <!--Bootstrap JS-->
