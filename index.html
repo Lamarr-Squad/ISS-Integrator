@@ -2,80 +2,161 @@
 <head>
   <meta charset="UTF-8">
   <title>ISS Tracker</title>
+    <!--Bootstrap CSS-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
   <script src="js/iss-pos-json.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <!-- mapbox CDN -->
-  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-  <script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>
-  <link href='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css' rel='stylesheet' />
+    <!-- mapbox CDN -->
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no'/>
+<!--  <script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>-->
+<!--  <link href='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css' rel='stylesheet'/>-->
 
-  <style>
-      body { margin:0; padding:0; }
-      #map { position:absolute; top:0; bottom:0; width:100%; }
-      .ui-coordinates {
-        position:absolute;
-        bottom:10px;
-        left:10px;
-        padding:5px 10px;
-        background:rgba(0,0,0,0.5);
-        color:#fff;
-        font-size:11px;
-        line-height:18px;
-        border-radius:3px;
-      }
-  </style>
+<!--<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>-->
+<!--<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />-->
+
+  <script src='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/v3.2.1/mapbox.css' rel='stylesheet' />
+<style>
+  .leaflet-popup {
+    width: 100%;
+  }
+</style>
+
+    <!--Custom CSS-->
+    <link rel="stylesheet" href="css/iss.css">
+
 </head>
 <body>
+
+// Live View Modal
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Live View From The ISS</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/EEIk7gwjgIM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+// End Live View modal
+
 
 <div id="map"></div>
 <pre id='coordinates' class='ui-coordinates'></pre>
 
 <script type="text/javascript">
-  $(document).ready(function() {
-    var lat, lon;
-    var pubnub = PUBNUB({
-      subscribe_key : 'demo'
-    });
+  $(document).ready(function () {
+      var lat, lon;
+      var pubnub = PUBNUB({
+          subscribe_key: 'demo'
+      });
 
-    // initializing mapbox
-    L.mapbox.accessToken = 'pk.eyJ1IjoiYW5tb2wxNzcxIiwiYSI6ImNYZXN1N28ifQ.s-1Hjdb2UR9_6eeTPJGn3A'; //public key
-    var map = L.mapbox.map('map', 'mapbox.streets');
-    var marker = L.marker([-73, 40], {
-      icon: L.mapbox.marker.icon({
-        'marker-size': 'large',
-        'marker-symbol': 'rocket',
-        "marker-color": "#63b6e5"
+      // initializing mapbox
+      L.mapbox.accessToken = 'pk.eyJ1IjoiYW5tb2wxNzcxIiwiYSI6ImNYZXN1N28ifQ.s-1Hjdb2UR9_6eeTPJGn3A'; //public key
+      var map = L.mapbox.map('map', 'mapbox.streets');
+
+      var marker = L.marker([-73, 40], {
+          icon: L.mapbox.marker.icon({
+              'marker-size': 'large',
+              'marker-symbol': 'rocket',
+              "marker-color": "#63b6e5"
+          })
       })
-    });
 
-    marker.addTo(map);
+             // .bindPopup('<button id="liveButton" type="button" data-toggle="modal" data-target="#myModal">Launch modal</button>')
 
-    // Add a new line to the map with no points.
-    var polyline = L.polyline([]).addTo(map);
+              .addTo(map);
+// LIVE VIEW POP
+//     $('#myModal').on('click', '.modal-body', function() {
+//       alert('Hello from Toronto!');
+//
+//     });
+//
+//     $('#map').on('click', '#liveButton', function() {
+//       $('#myModal').modal('show');
+//     });
+    // "<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/EEIk7gwjgIM\" " +
+    // "frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen>Live View From the ISS!</iframe>"
 
-    // Keep a tally of how many points we've added to the map.
-    var pointsAdded = 0;
+// LIVE VIEW END
 
-    var coordinates = document.getElementById('coordinates');
+      marker.addTo(map);
 
-    pubnub.subscribe({
-      channel : "iss-pubnub",
-      message : function(message){
-        lat = message['latitude'];
-        lon = message['longitude'];
+      // Add a new line to the map with no points.
+      var polyline = L.polyline([]).addTo(map);
 
-        map.setView([lat, lon]);
-        marker.setLatLng([lat, lon], 15); //15 is the zoomlevel
+      // Keep a tally of how many points we've added to the map.
+      var pointsAdded = 0;
 
-        polyline.addLatLng([lat, lon], pointsAdded);
+      var coordinates = document.getElementById('coordinates');
 
-        coordinates.innerHTML = 'Latitude: ' + lat + '<br />Longitude: ' + lon;
-      }
-    })
-    // pubnub subscribe end
+      pubnub.subscribe({
+          channel: "iss-pubnub",
+          message: function (message) {
+              lat = message['latitude'];
+              lon = message['longitude'];
+
+              map.setView([lat, lon]);
+              marker.setLatLng([lat, lon], 15); //15 is the zoomlevel
+
+              polyline.addLatLng([lat, lon], pointsAdded);
+
+              coordinates.innerHTML = 'Latitude: ' + lat + '<br />Longitude: ' + lon + '<br /> <button id="liveButton" type="button" data-toggle="modal" data-target="#myModal">Live View</button><div><h2 id="theFacts">This is a special fact</h2></div>';
+          }
+
+      })
+
+      // track end
+
 
   });
+  function randomFact() {
+  var funFacts =
+          [
+               "The ISS is the largest manned object ever put into space!",
+               "16 nations were involved in the construction of the ISS!",
+               "The ISS travels at speeds upwards of 5 miles-per-second!",
+               "The ISS is the single most expensive built in the history of mankind, estimated at over $120 billion dollars!",
+               "Space is Silent! Since there is no atmosphere in space, sound waves have no way of travelling!",
+               "The first astronauts' footsteps on the moon will probably still be there 100 years from now!",
+               "A little under 6 percent of our entire solar system's mass belongs to the sun!",
+               "If 2 pieces of the same metal touch each other in space, they will bond together - a process known as 'cold welding'!",
+               "ISS is an acronym for International Space Station!",
+              "The first African-American woman in space was Dr. Mae Jemison in September of 1992!",
+               "The first piloted mission in space was Apollo 7 in 1968!"
+    ];
+
+    var x = funFacts.length;
+    var i = Math.floor((Math.random() * x) + 1);
+
+    return funFacts[i];
+  }
+  setTimeout(function(){
+    $('#theFacts').empty().append(randomFact());
+    console.log("ok go");
+  }, 5000);//wait 2 seconds
+
+  console.log(randomFact());
   // document end
 </script>
+<!--Bootstrap JS-->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+<!--Custom JS-->
 </body>
 </html>
