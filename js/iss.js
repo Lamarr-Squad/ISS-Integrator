@@ -23,7 +23,7 @@ $(document).ready(function () {
                 var lng = json.longitude;
                 var alt = json.altitude;
                 var vel = json.velocity;
-                var issDataGeoJSON = {
+                window.issDataGeoJSONGlobal = {
                     "type": "Feature",
                     "geometry": {
                         "type": "Point",
@@ -33,7 +33,6 @@ $(document).ready(function () {
                         "name": "test"
                     }
                 };
-                window.issDataGeoJSONGlobal = issDataGeoJSON;
                 document.getElementById('lat').innerHTML = "Latitude: " + lat.toFixed(6);
                 document.getElementById('lng').innerHTML = "Longitude: " + lng.toFixed(6);
                 document.getElementById('altitude').innerHTML = "Altitude: " + alt.toFixed(6);
@@ -43,7 +42,7 @@ $(document).ready(function () {
     }
 
     getCoords();
-    // console.log(issDataGeoJSONGlobal);
+    console.log(issDataGeoJSONGlobal);
     map.on('load', function () {
         window.setInterval(function () {
             map.getSource('drone').setData(issDataGeoJSONGlobal);
